@@ -1,2 +1,2 @@
 # Laboratorio1-Scheme
-Empezando a realizar el laboratorio
+02-11-2020 //empezando a realizar el laboratorio
