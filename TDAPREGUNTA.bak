@@ -18,7 +18,9 @@
 (define (register )
   (list )
 )
-
+;;Revisa que sea un articulo que cumpla con 2 strings.
+;;ej;(articulo "hola" "hola") duelve ("hola" "hola").
+;;si se pone (articulo "hola" 2) duelve parametros invalidos
 (define (articulo user pass)
   (if(and (string? user) (string? pass))
      (list user pass)
@@ -33,6 +35,37 @@
 ;Creamos una lista vacia que tendra las preguntas en el foro.
 (define (foropreguntasvacio )
   (list )
+)
+
+;Pertenencia
+;;Funciones de pertenencia para register.
+;;Preguntamos si la lista esta vacia, si es asi devuelve true.
+(define (listaregister? listaregister)
+  (if (null? listaregister)
+      #t
+      ;;preguntamos si listaregister es una lista ("","")
+      (if (list? listaregister)
+          ;;preguntamos si es un articulo 
+           (if (articulo? (car listaregister) )
+               (listaregister? (cdr listaregister))
+               #f
+           )
+           #f
+      )
+  )
+)
+;;definimos que es un articulo
+(define (articulo? art)
+  ;;si articulo es una lista
+  (if (list? art)
+     ;;tiene que ser de orden 2 (user, pass)
+    (if (= 2 (length art))
+       ;;preguntamos si (user es string y si pass es string)
+      (and (string? (car art)) (string? (cadr art)))
+      ;;si no se cumple devuelve False
+           #f)
+      ;;si no se cumple devuelve false.
+      #f)
 )
 
 
