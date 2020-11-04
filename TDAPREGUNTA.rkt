@@ -43,7 +43,7 @@
 (define (listaregister? listaregister)
   (if (null? listaregister)
       #t
-      ;;preguntamos si listaregister es una lista ("","")
+      ;;preguntamos si listaregister es una lista ("" "")
       (if (list? listaregister)
           ;;preguntamos si es un articulo 
            (if (articulo? (car listaregister) )
@@ -98,6 +98,18 @@
         )
         (raise "No es un artículo")
          )
+)
+;;Funcion para agregar usuarios a lista de usuarios.
+
+;; Ejemplo:(adduser(adduser(register)"holi2" "soyclave2222")"hola3" "s")
+(define (adduser listauser user pass)
+  ;preguntamos si es una listaregister
+  (if (listaregister? listauser)
+    ;;cons agregamos elemento a la izquierda ("user" "pas") y listauser es la lista.
+    (cons (articulo user pass) listauser)
+    ;;si no cumple se muestra en pantalla.
+    (raise "No es una lista de compras")
+ )
 )
 
 
