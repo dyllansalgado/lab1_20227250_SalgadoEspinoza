@@ -1,5 +1,4 @@
 #lang racket
-
 ;Que debo ir creando para la opcion register.
 
 ;1)Primero debo crear una lista vacia que solicitara los datos de usuario y contraseña.
@@ -15,6 +14,20 @@
 
 
 ;Constructores
+;;Creamos una lista vacia que contendra a los registros.
+(define (register )
+  (list )
+)
+;;Revisa que sea un articulo que cumpla con 2 strings.
+;;ej;(articulo "hola" "hola") duelve ("hola" "hola").
+;;si se pone (articulo "hola" 2) duelve parametros invalidos
+(define (articulo user pass)
+  (if(and (string? user) (string? pass))
+     (list user pass)
+     (raise "parametros invalidos")
+     )
+  )
+
 ;Creamos una lista vacia que contendra a los usuarios.
 (define (usuariosvacio )
   (list )
@@ -23,7 +36,6 @@
 (define (foropreguntasvacio )
   (list )
 )
-
 
 
 
