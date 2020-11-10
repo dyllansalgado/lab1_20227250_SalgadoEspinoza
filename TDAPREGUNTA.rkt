@@ -4,7 +4,7 @@
 ;1)Primero debo crear una lista vacia que solicitara los datos de usuario y contraseña.
 ;2)Asignar la lista que sera tipo ( user, pass) a otra lista contenedora llama lista de usuarios.
 ;3)Luego debo ver si el nombre de usuario se encuentra en la lista de usuarios (con recursion)
-;4)Si se encuentra debo mostrar por pantalla que el nombre de usuario no se encuentra y que debe volver a registrarse.
+;4)Si se encuentra debo mostrar por pantalla que el nombre de usuario no se encuentra disponible y que debe volver a registrarse.
 
 ;Que debo ir creando para la opcion login.
 
@@ -14,40 +14,62 @@
 
 
 ;Constructores
-;;Creamos una lista vacia que contendra a los registros.
-(define (register )
-  (list )
-)
-;;Revisa que sea un articulo que cumpla con 2 strings.
-;;ej;(articulo "hola" "hola") duelve ("hola" "hola").
-;;si se pone (articulo "hola" 2) duelve parametros invalidos
-(define (articulo user pass)
-  (if(and (string? user) (string? pass))
-     (list user pass)
-     (raise "parametros invalidos")
-     )
+;descripción: Permite crear un registro
+;dom: string x string
+;rec: lista
+;ejemplo de uso : (register "user1" "pass1")
+(define (register user pass)
+  (if (and (string? user) (string? pass))
+      (list user pass)
+      (raise "No es un registro de usuario valido")
   )
+)
+;Constructor para etiquetas
+;descripción: Permite crear una lista de etiquetas
+;dom: string 
+;rec: lista
+;ejemplo de uso : (etiquetas "racket" "scheme")
+(define (etiquetas etiquetas)
+  (if (or (string? etiquetas)(null? etiquetas))
+      (list etiquetas)
+      (raise "No son etiquetas") 
+   )
+)
+;Constructor para preguntas
+;descripción: Permite crear una pregunta
+;dom: string x lista de string
+;rec: lista
+;ejemplo de uso : 
+(define (ask ask etiquetas)
+  (if (and(string? ask)(list? etiquetas))
+      (list ask)
+      (raise "No es una pregunta")
+  )
+)
 
-;Creamos una lista vacia que contendra a los usuarios.
-(define (usuariosvacio )
-  (list )
-)
-;Creamos una lista vacia que tendra las preguntas en el foro.
-(define (foropreguntasvacio )
-  (list )
-)
+;Constructor para respuestas
+;(define (answer)
+  ;)
+
+;CONSTRUCTOR USUARIO
+(define (preguntas fecha ask answer)
+    (if (and (string? fecha) (list? ask) (list? answer))
+             (list fecha ask answer)
+             (raise "No cumple los parametros")       
+             )
+ )
 
 ;Pertenencia
 ;;Funciones de pertenencia para register.
 ;;Preguntamos si la lista esta vacia, si es asi devuelve true.
-(define (listaregister? listaregister)
-  (if (null? listaregister)
+(define (register? register)
+  (if (null? register)
       #t
       ;;preguntamos si listaregister es una lista ("" "")
-      (if (list? listaregister)
+      (if (list? register)
           ;;preguntamos si es un articulo 
-           (if (articulo? (car listaregister) )
-               (listaregister? (cdr listaregister))
+           (if (register? (car register) )
+               (register? (cdr register))
                #f
            )
            #f
@@ -94,7 +116,7 @@
 ;;Le doy un nuevo nombre y la pass.
 (define (articulo->setuser art nvoNombre)
         (if (articulo? art)
-        (articulo nvoNombre (articulo->getpass art)
+        (register nvoNombre (articulo->getpass art)
         )
         (raise "No es un artículo")
          )
@@ -104,9 +126,9 @@
 ;; Ejemplo:(adduser(adduser(register)"holi2" "soyclave2222")"hola3" "s")
 (define (adduser listauser user pass)
   ;preguntamos si es una listaregister
-  (if (listaregister? listauser)
+  (if (register? listauser)
     ;;cons agregamos elemento a la izquierda ("user" "pas") y listauser es la lista.
-    (cons (articulo user pass) listauser)
+    (cons (register user pass) listauser)
     ;;si no cumple se muestra en pantalla.
     (raise "No es una lista de compras")
  )

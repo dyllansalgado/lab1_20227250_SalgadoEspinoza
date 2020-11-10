@@ -68,6 +68,39 @@
       #f)
 )
 
+;Selectores
+;;Funciones de selectores para register.
+(define articulo->getuser (lambda (art)
+              ;;pregunto si art es un articulo              
+             (if (articulo? art)
+                 ;;devuelve el user
+                 (car art)
+                 (raise "No es un artículo")
+                 )
+       )
+)
+(define articulo->getpass (lambda (art)
+              ;;pregunto si art es un articulo
+             (if (articulo? art)
+                 ;;devuelve la pass
+                 (cdr art)
+                 (raise "No es un artículo")
+                 )
+       )
+)
+
+;Modificadores
+;;funcion que crea un nuevo usuario a partir de otro usuario.
+;;Le doy un nuevo nombre y la pass.
+(define (articulo->setuser art nvoNombre)
+        (if (articulo? art)
+        (articulo nvoNombre (articulo->getpass art)
+        )
+        (raise "No es un artículo")
+         )
+)
+
+
 
 
 

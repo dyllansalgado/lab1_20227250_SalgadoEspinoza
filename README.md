@@ -4,3 +4,4 @@
 03-11-2020 //subiendo parte de lo que llevaba debo tener fallas.
 03-11-2020 //Subiendo mas codigo que tenia hecho.
 03-11-2020 //subiendo mas codigo.
+09-11-2020 //Me percato de que el tda estaba mal pensando. Tratando de ir cambiando cosas.
