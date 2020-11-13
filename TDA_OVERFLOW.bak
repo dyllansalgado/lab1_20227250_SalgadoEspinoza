@@ -49,6 +49,7 @@
 (define (GetListaDeRespuestas stack) (selectorDato stack 2))
 (define (GetActiveUsuario stack) (selectorDato stack 3))
 (define (GetUsuarioLogeado stack) (selectorDato (selectorDato stack 3) 0))
+
 (define (logear stack user password)
   (cambiarDato stack 3(list user password)))
 
@@ -101,8 +102,10 @@
                  (cambiarDato stack 1 (añadirDato
                   (GetListaDePreguntas stack) (list (length (GetListaDePreguntas stack))
                                                     (GetUsuarioLogeado stack)) ))
-                 "No hay usuario logeado"))))
+                 "No hay usario logeado"))))
                
+
+
 ;LOGIN
 ;Ejemplo : (login stackoverflow "juan01" "pass" ask)
 ;Ejemplo : (login stackoverflow "juan01" "clave123" ask)
