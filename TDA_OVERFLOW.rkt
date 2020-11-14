@@ -1,5 +1,6 @@
 #lang racket
 (require "funciones.rkt")
+(require "TDAFecha.rkt")
 ;EJEMPLO 2
 ;sin usuarios.
 (define stackoverflow2
@@ -23,7 +24,7 @@
   (list (list "juan01" "clave123")(list "diego02" "clave123"))
   ;1
   ;TDA PREGUNTA 1/0 es respondida o no.
-  (list (list 1 "pregunta" "juan01" (list "etiquetas" "C" "universidad") "autor" "10/12/2020" 1 ))
+  (list (list 1 "pregunta" "juan01" (list "etiquetas" "C" "universidad") "10/12/2020" 1 ))
   ;2
   ;TDA Respuestas
   (list (list 1 (list "diego02" "12/12/2020"  "respuesta" (list "etiquetas" "c"))))
@@ -49,8 +50,12 @@
 (define (GetListaDeRespuestas stack) (selectorDato stack 2))
 (define (GetActiveUsuario stack) (selectorDato stack 3))
 (define (GetUsuarioLogeado stack) (selectorDato (selectorDato stack 3) 0))
+
 (define (logear stack user password)
   (cambiarDato stack 3(list user password)))
+
+(define (deslogear stack)
+  (cambiarDato stack 3(list)))
 
 
 ;REGISTER
@@ -73,10 +78,7 @@
 (define existNameUser?(lambda(stackoverflow user)
                         (if(null? (selectorDato stackoverflow 0))
                            #f
-                           (buscadorNameUser (selectorDato stackoverflow 0) user)
-                        )
-                       )
-)
+                           (buscadorNameUser (selectorDato stackoverflow 0) user))))
 ;Funcion para ver si el usuario se repite.
 (define buscadorNameUser(lambda(lista user)
                            (cond
@@ -95,14 +97,22 @@
                               [else(buscadorNameUser (cdr lista) user)])))
 ;ask
 ;recorrido :list ->stack X date X string X string list
+; Ejemplo :  (((login stackoverflow "juan01" "clave123" ask)(date))"question?" "C#")
+; Ejemplo : (((login stackoverflow "juan01" "clave123" ask)(fecha 1 2 3))"question?" "C#")
+
 (define (ask stack)(lambda (date)
                (lambda (question .labels)
                  (if (not (null? (GetActiveUsuario stack)))
                  (cambiarDato stack 1 (añadirDato
-                  (GetListaDePreguntas stack) (list (length (GetListaDePreguntas stack))
-                                                    (GetUsuarioLogeado stack)) ))
-                 "No hay usuario logeado"))))
+                  (GetListaDePreguntas stack)
+                  (list (+ (length (GetListaDePreguntas stack)) 1)
+                  question (GetUsuarioLogeado stack)
+                  (list .labels) date 0
+                  ) ))
+                 "No hay usario logeado \n"))))
                
+
+
 ;LOGIN
 ;Ejemplo : (login stackoverflow "juan01" "pass" ask)
 ;Ejemplo : (login stackoverflow "juan01" "clave123" ask)
@@ -113,7 +123,7 @@
                            (cond
                              ;ask
                              [(equal? operation ask)
-                              (ask stack)]
+                              (ask (logear stack username password))]
                              [else
                               (display "Comando Invalido\n")])
                            "Contraseña incorrecta\n"

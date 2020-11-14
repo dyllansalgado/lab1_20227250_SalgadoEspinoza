@@ -77,7 +77,35 @@
     (reverse(añadirDato (reverse lista) nuevoDato))))
 
 
+;Función la cual crea en ese instante una lista con los datos de la fecha de ese instante
+;Dominio:Void
+;Recorrido: Lista
+(define get-lista-tiempo
+  (lambda ()
+    (list
+     (date-second (seconds->date (current-seconds)))
+     (date-minute (seconds->date (current-seconds)))
+     (date-hour (seconds->date (current-seconds)))
+     (date-day (seconds->date (current-seconds)))
+     (date-month (seconds->date (current-seconds)))
+     (date-year (seconds->date (current-seconds))))))
+;(define lista (get-lista-tiempo))
 
+;Funcion traductora a string para que se más comprensible para el ususario
+;Dominio: Lista
+;Recorrido : String
+(define tiempo->string
+  (lambda (listaTiempo)
+    (string-append (~v (selectorDato listaTiempo 0))":"
+                   (~v (selectorDato listaTiempo 1))":"
+                   (~v (selectorDato listaTiempo 2))" "
+                   (~v (selectorDato listaTiempo 3))"/"
+                   (~v (selectorDato listaTiempo 4))"/"
+                   (~v (selectorDato listaTiempo 5))"\n")))
+
+(define (date) (tiempo->string (get-lista-tiempo)))
+
+(provide date)
 (provide selectorDato)
 ;Modificadores
 (provide cambiarDato)
