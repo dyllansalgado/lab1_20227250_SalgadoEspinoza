@@ -7,3 +7,4 @@
 09-11-2020 //Me percato de que el tda estaba mal pensando. Tratando de ir cambiando cosas.
 12-11-2020 //Subiendo avance
 13-11-2020 //avanzando en ask
+16-11-2020//Reward
