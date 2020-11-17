@@ -8,3 +8,4 @@
 12-11-2020 //Subiendo avance
 13-11-2020 //avanzando en ask
 16-11-2020//Reward
+17-11-2020//answer, debo crear 3 funciones mas y arreglar el stackoverflow.
