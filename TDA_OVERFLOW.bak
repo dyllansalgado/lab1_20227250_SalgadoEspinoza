@@ -36,7 +36,6 @@
   )
 )
 ;Constructor
-;Ejemplo:
 (define construirStack (lambda () (list (list) (list) (list) (list))))
 ;Pertenencia de stackoverflow.
 ;Ejemplo:(esStackoverflow? stackoverflow)
