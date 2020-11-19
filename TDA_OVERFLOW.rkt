@@ -1,53 +1,20 @@
 #lang racket
 (require "funciones.rkt")
 (require "TDAFecha.rkt")
-;LISTA X LISTAS
-(define stackConstructor
-  (list
-  ;0
-  ;tiene todos los usuarios y contraseñas
-  ;TDA usuario contraseña
-  ;LISTA
-  ;TDA base de datos de usuarios y contraseñas
-  ;LISTA X LISTAS
-  (list )
-  ;1
-  ;ultimo dato que se agregara a esta lista es el reward
-  (list )
-  ;2
-  ;TDA Respuestas
-  (list )
-  ;3
-  ;Sección de usario con sesión abierta
-  (list )
-  )
-)
 
-;EJemplo de stack 
-;EJEMPLO 1
-;con 1 usuario
-;TDA stackoverflow
-(define stackoverflow2
-  (list
-  ;0
-  ;tiene todos los usuarios y contraseñas
-  ;TDA usuario contraseña
-  ;LISTA
-  ;TDA base de datos de usuarios y contraseñas
-  ;LISTA X LISTAS
-  (list (list "juan01" "clave123" 0)(list "diego02" "clave123" 0))
-  ;1
-  ;TDA PREGUNTA 1/0 es respondida o no.
-  (list (list 1 "pregunta" "juan01" (list "etiquetas" "C" "universidad") "10/12/2020" 0 ))
-  ;2
-  ;TDA Respuestas
-  (list (list 1 (list 1 "diego02" "12/12/2020"  "respuesta" (list "etiquetas" "c"))(list 1 "diego02" "12/12/2020"  "respuesta4" (list "etiquetas" "c"))))
-  ;3
-  ;Sección de usario con sesión abierta
-  (list)
-  )
-)
+;CONSTRUCTOR
+
+;Constructor stackoverflow
+;Dominio: lista de registros x lista de ask , lista de answer, lista sesion.
+;Recorrido: lista de listas, que contendra a los registros, ask, answer y sesion.
+;Ejemplo:(stackoverflow (list) (list) (list) (list))
+(define (stackoverflow ListRegister ListAsk ListAnswer ListSesion)(list ListRegister ListAsk ListAnswer ListSesion))
+
+;PERTENENCIA
+
 ;Pertenencia de stackoverflow.
+;Dominio: stack.
+;Recorrido: bolean.
 ;Ejemplo:(esStackoverflow? stackoverflow)
 (define (esStackoverflow? stackoverflow)
   (if (list? stackoverflow)
@@ -57,6 +24,55 @@
   #f
   )
 )
+
+;Funcion: comprobar si existe un usuario.
+;Dominio: lista registros en stack.
+;Recorrido: bolean.
+;ejemplo : (existNameUser? stackoverflow "user")
+(define existNameUser?(lambda(stackoverflow user)
+                        (if(null? (selectorDato stackoverflow 0))
+                           #f
+                           (buscadorNameUser (selectorDato stackoverflow 0) user))))
+;Funcion:
+;Dominio:
+;Recorrido:
+;Tipo recursion: natural
+;Ejemplo: (preguntaCorresponde? (GetListaDePreguntas stack) id "user")
+(define preguntaCorresponde?
+  (lambda (lista id user)
+    (cond
+      ;Hasta que llege a ser nulo
+      [( null? lista) #f]
+      ;Si no es nulo sigo buscando el ultimo elemento (null) de la lista
+      [(equal? (car(car lista)) id) (equal? (selectorDato (car lista) 2) user) ]
+      [else(preguntaCorresponde? (cdr lista) id user)])))
+
+;Funcion:
+;Dominio:
+;Recorrido:
+;Tipo recursion: natural
+;Ejemplo:(existePreguntaID? (GetListaDePreguntas stack) id )
+(define existePreguntaID?(lambda(lista id)
+                            (cond
+                              ;Hasta que llege a ser nulo
+                              [( null? lista) #f]
+                              ;Si no es nulo sigo buscando el ultimo elemento (null) de la lista
+                              [(equal? (car(car lista)) id) #t ]
+                              [else(existePreguntaID? (cdr lista) id)])))
+;Funcion:
+;Dominio: lista de respuestas idPregunta idRespuesta.
+;Recorrido:
+;Tipo recursion:
+;Ejemplo: (existeRespuestaID? (GetListaDeRespuestas stack) idPregunta idRespuesta)
+(define existeRespuestaID?(lambda(lista idPregunta idRespuesta)
+                            (cond
+                              ;Hasta que llege a ser nulo
+                              [( null? lista) #f]
+                              ;Si no es nulo sigo buscando el ultimo elemento (null) de la lista
+                              [(equal? (car(car lista)) idPregunta) (existePreguntaID? (cdr(car lista)) idRespuesta) ]
+                              [else(existeRespuestaID? (cdr lista) idPregunta idRespuesta)])))
+
+;SELECTORES
 ;selectores de stackoverflow
 (define (GetListaDeUsuarios stack) (selectorDato stack 0))
 (define (GetListaDePreguntas stack) (selectorDato stack 1))
@@ -64,19 +80,18 @@
 (define (GetActiveUsuario stack) (selectorDato stack 3))
 (define (GetUsuarioLogeado stack) (selectorDato (selectorDato stack 3) 0))
 
-(define (logear stack user password)
-  (cambiarDato stack 3(list user password)))
-
-(define (deslogear stack)
-  (cambiarDato stack 3(list)))
-
-;Obtener cuanto reward da cierta pregunta dado el id de esta
-;EJEMPLO  :(getRewardPregunta (GetListaDePreguntas stackoverflow) 1)
+;Funcion: Obtener cuanto reward da cierta pregunta dado el id de esta.
+;Dominio:
+;Recorrido:
+;Ejemplo:(getRewardPregunta (GetListaDePreguntas stackoverflow) 1)
 (define getRewardPregunta (lambda (lista idPregunta)
                             (selectorDato (selectorDato lista (getIndicePreguntaID lista idPregunta)) 5)))
 
-;Obtener el usuario de una respuesta
-;Ejemplo  : (getUsuarioAnswer (GetListaDeRespuestas stackoverflow) 1 1)
+;Funcion: Obtener el usuario de una respuesta
+;Entrada: Recibe el id de la pregunta y el id de respuesta.
+;Recorrido: Usuario que realiza pregunta, si no se encuentra entrega #f
+;Tipo de recursion: natural.
+;Ejemplo: (getUsuarioAnswer (GetListaDeRespuestas stackoverflow) 1 1)
 (define getUsuarioAnswer
 (lambda(lista idPregunta idRespuesta)
   (define buscarUsuario
@@ -93,53 +108,28 @@
     ;Si no es nulo sigo buscando el ultimo elemento (null) de la lista
     [(equal? (car(car lista)) idPregunta) (buscarUsuario (cdr(car lista)) idRespuesta) ]
     [else(getUsuarioAnswer (cdr lista) idPregunta idRespuesta)])))
-;(getIndiceUsuario stackoverflow "juan01")
+
+;Funcion: Obtiene el indice del usuario entregado.
+;Entrada: Se le entrega el nombre del usuario.
+;Salida: Indice de la lista que corresponde dicho nombre de usuario.
+;Tipo de recursion: natural.
+;Ejemplo:(getIndiceUsuario so "usuario")
 (define getIndiceUsuario
   (lambda (stack usuario)
     (define buscarIndice
       (lambda (lista usuario i)
         (cond
           ;Hasta que llege a ser nulo
-          [( null? lista) -1]
+          [( null? lista) "no se encuentra indice de usuario"]
           ;Si no es nulo sigo buscando el ultimo elemento (null) de la lista
           [(equal? (car(car lista)) usuario) i]
           [else (buscarIndice (cdr lista) usuario (+ i 1))])))
     (buscarIndice (GetListaDeUsuarios stack) usuario 0)))
-;(asignarRewardUsuario stackoverflow "juan01" 100)
-(define asignarRewardUsuario (lambda (stack usuario reward)
-                               (cambiarDato stack 0 (cambiarDato (GetListaDeUsuarios stack) (getIndiceUsuario stack usuario) (cambiarDato (selectorDato (GetListaDeUsuarios stack) (getIndiceUsuario stack usuario)) 2 reward ))) ))
 
-
-(define preguntaCorresponde?
-  (lambda (lista id user)
-    (cond
-      ;Hasta que llege a ser nulo
-      [( null? lista) #f]
-      ;Si no es nulo sigo buscando el ultimo elemento (null) de la lista
-      [(equal? (car(car lista)) id) (equal? (selectorDato (car lista) 2) user) ]
-      [else(preguntaCorresponde? (cdr lista) id user)])))
-
-
-(define existePreguntaID?(lambda(lista id)
-                            (cond
-                              ;Hasta que llege a ser nulo
-                              [( null? lista) #f]
-                              ;Si no es nulo sigo buscando el ultimo elemento (null) de la lista
-                              [(equal? (car(car lista)) id) #t ]
-                              [else(existePreguntaID? (cdr lista) id)])))
-
-;Entrada : lista de respuestas idPregunta idRespuesta
-(define existeRespuestaID?(lambda(lista idPregunta idRespuesta)
-                            (cond
-                              ;Hasta que llege a ser nulo
-                              [( null? lista) #f]
-                              ;Si no es nulo sigo buscando el ultimo elemento (null) de la lista
-                              [(equal? (car(car lista)) idPregunta) (existePreguntaID? (cdr(car lista)) idRespuesta) ]
-                              [else(existeRespuestaID? (cdr lista) idPregunta idRespuesta)])))
-
-
-;Get indice de pregunta en una lista de respuestas
-; EJEMPLO : (getIndicePreguntaID (GetListaDeRespuestas stackoverflow) 1)
+;Funcion: obtener indice de pregunta en una lista de respuestas
+;Entrada:
+;Salida:
+;EJEMPLO : (getIndicePreguntaID (GetListaDeRespuestas stackoverflow) 1)
 (define getIndicePreguntaID (lambda(lista id)
                 (define buscar (lambda(lista id i)
                             (cond
@@ -150,7 +140,17 @@
                               ;Caso recursivo
                               [else(buscar (cdr lista) id (+ i 1))])))
                (buscar lista id 0)))
-
+;MODIFICADORES
+;Funcion: Asigna el reward que se ha ingresado a un usuario.
+;Entrada: stack X usuario X reward.
+;Salida: Usuario con reward otorgado.
+;Ejemplo:(asignarRewardUsuario stackoverflow "juan01" 100)
+(define asignarRewardUsuario (lambda (stack usuario reward)
+                               (cambiarDato stack 0 (cambiarDato (GetListaDeUsuarios stack) (getIndiceUsuario stack usuario) (cambiarDato (selectorDato (GetListaDeUsuarios stack) (getIndiceUsuario stack usuario)) 2 reward ))) ))
+;Funcion:
+;Entrada:
+;Salida:
+;Ejemplo:
 (define asignarRewardPreguntaID(lambda (lista id reward stack i)
                             (cond
                               ;Hasta que llege a ser nulo
@@ -160,13 +160,18 @@
                               (cambiarDato (GetListaDePreguntas stack) i (asignarReward (car lista) reward)) ) ]
                               [else(asignarRewardPreguntaID (cdr lista) id reward stack (+ i 1))])
                             ))
-;modificador reward dado una pregunta
+
+;Funcion: Asigno el reward a la pregunta.
+;Entrada:
+;Salida:
+;Ejemplo:
 (define asignarReward (lambda (pregunta reward)
                         (cambiarDato pregunta 5 reward)))
-
-;Responder pregunta segun el id
+;Responder pregunta segun el id.
+;Dominio:
+;Recorrido:
+;Ejemplo:
 (define responderPreguntaID (lambda (stack listaRespuestas id respuesta date etiquetas)
-                              
                                ;caso de que la lista de respeustas a la pregunta este vacía o no exista la respuesta aún
                                (if (or (null? listaRespuestas) (equal? (getIndicePreguntaID listaRespuestas id) #f))
                                    (cambiarDato stack 2
@@ -177,10 +182,10 @@
                                     (añadirDato (selectorDato listaRespuestas (getIndicePreguntaID listaRespuestas id)) (list (length (selectorDato listaRespuestas (getIndicePreguntaID listaRespuestas id))) (GetUsuarioLogeado stack) date respuesta etiquetas)))))))
 
 ;REGISTER
-;Funcion register
-;Ejemplo: (register stackoverflow "user01" "pass01")
-;Ejemplo: (register stackoverflow "juan01" "pass01")
-;Ejemplo: (register (construirStack) "user01" "pass01")
+;Funcion: registra a un usuario en el stack.
+;Dominio: stack x string x string.
+;Recorrido: stack con el registro completado.
+;Ejemplo: (register stackoverflow "user" "pass")
 (define register(lambda(stackoverflow user pass)
                   (if (and (esStackoverflow? stackoverflow)(string? user)(string? pass))
                       (if (existNameUser? stackoverflow user)
@@ -190,35 +195,12 @@
                   )
                )
  )
-;Funcion para ver si el usuario se repite.
-;Funcion para comprobar si existe un usuario.
-;ejemplo : (existNameUser? stackoverflow "diego02")
-(define existNameUser?(lambda(stackoverflow user)
-                        (if(null? (selectorDato stackoverflow 0))
-                           #f
-                           (buscadorNameUser (selectorDato stackoverflow 0) user))))
-;Funcion para ver si el usuario se repite.
-(define buscadorNameUser(lambda(lista user)
-                           (cond
-                              ;Hasta que llege a ser nulo
-                              [( null? lista) #f]
-                              ;Si no es nulo añado uno más a la cuenta del longitud y sigo buscando el ultimo elemento (null) de la lista
-                              [(equal? (car(car lista)) user) #t]
-                              [else(buscadorNameUser (cdr lista) user)])))
 
-(define buscadorUserPassword(lambda(lista user password)
-                           (cond
-                              ;Hasta que llege a ser nulo
-                              [( null? lista) #f]
-                              ;Si no es nulo añado uno más a la cuenta del longitud y sigo buscando el ultimo elemento (null) de la lista
-                              [(equal? (car(car lista)) user) (equal? (car(cdr(car lista))) password)]
-                              [else(buscadorNameUser (cdr lista) user)])))
-
-           
-
-;LOGIN que es como un main
-;Ejemplo : (login stackoverflow "juan01" "pass" ask)
-;Ejemplo : (login stackoverflow "juan01" "clave123" ask)
+;Funcion : login permite al registro realizado poder ingresar.
+;Dominio: stack x string x string x funcion
+;Salida: stack con funcion realizada
+;Tipo de recursion: Se utiliza recursion natural en funcion buscadorNameUser.
+;Ejemplo : (login stackoverflow "user" "pass" ask)
 (define login (lambda (stack username password operation)
                 (if (and (esStackoverflow? stack) (string? username) (string? password))
                     (if (buscadorNameUser (selectorDato stack 0) username)
@@ -244,11 +226,12 @@
                         )
                     "Datos entregados erroneos"
                     )))
-;ask
-;recorrido :list ->stack X date X string X string list
-; Ejemplo :  (((login stackoverflow "juan01" "clave123" ask)(date))"question?" "C#")
-; Ejemplo : (((login stackoverflow "juan01" "clave123" ask)(fecha 1 2 3))"question?" "C#")
-
+;ASK
+;Funcion: permite a un usuario con sesión iniciada en la plataforma realizar una nueva pregunta.
+;Dominio: stack
+;Recorrido :list ->stack X date X string X string list
+;Ejemplo :(((login stackoverflow "user" "pass" ask)(date))"question?" "C#")
+;Ejemplo :(((login stackoverflow "user" "pass" ask)(fecha 1 2 3))"question?" "C#")
 (define (ask stack)(lambda (date)
                (lambda (question .labels)
                  (if (not (null? (GetActiveUsuario stack)))
@@ -261,7 +244,10 @@
                  "No hay usario logeado \n"))))
 
 ;REWARD
-;(((login stackoverflow "juan01" "clave123" reward) 1) 300)
+;Funcion: permite a un usuario con sesión iniciada en la plataforma ofrecer una recompensa para una determinada pregunta.
+;Dominio: stack
+;Recorrido: integer(id de pregunta) x integer (recompensa)
+;Ejemplo:(((login stackoverflow "user" "pass" reward) 1) 300)
 (define (reward stack)(lambda(id)
                  (lambda (reward)
                    (if (not (null? (GetActiveUsuario stack)))
@@ -273,7 +259,10 @@
                    "No hay usario logeado \n"))))
 
 ;ANSWER
-;EJEMPLO : ((((login stackoverflow "juan01" "clave123" answer) (date)) 1) "mi respuesta" "C")
+;Funcion: permite a un usuario con sesión iniciada en la plataforma responder una pregunta.
+;Dominio: stack
+;Recorrido: stack con respuesta ingresada.
+;Ejemplo : ((((login stackoverflow "user" "pass" answer) (date)) 1) "mi respuesta" "C")
 (define (answer stack)(lambda (date)
                         (lambda(id)
                           (lambda (answer .labels)
@@ -282,9 +271,11 @@
                                 "No existe pregunta con tal ID")))))
 
 ;ACCEPT
-;(((login stackoverflow "juan01" "clave123" accept) 1) 1)
-;(((login (((login stackoverflow "juan01" "clave123" reward) 1) 300) "juan01" "clave123" accept) 1) 1)
-;(getUsuarioAnswer (GetListaDeRespuestas stackoverflow) 1 1)
+;Funcion: permite a un usuario con sesión iniciada en la plataforma aceptar una respuesta a una de sus preguntas.
+;Dominio: stack
+;Recorrido: stack con la respuesta aceptada entregando reward si es que tiene.
+;Ejemplo:(((login stackoverflow "user" "pass" accept) 1) 1)
+;Ejemplo:(((login (((login stackoverflow "user" "pass" reward) 1) 300) "user" "pass" accept) 1) 1)
 (define (accept stack)
   (lambda (idPregunta)
     (lambda(idRespuesta)
@@ -304,62 +295,14 @@
       "No hay usario logeado \n"))))
 
 
-;STACK -> STRING
+;STACK ->STRING
+;Funcion:recibe un stack y entrega una representación del mismo como un string posible de visualizar de forma comprensible al usuario
+;Dominio: stack
+;Recorrido: string del stack
 ;EJEMPLO:(display(stack->string stackoverflow))
 (define stack->string (lambda (stack)
        (string-append
         (usuarios2String (GetListaDeUsuarios stack)) "\n"
         (preguntas2String (GetListaDePreguntas stack) (GetListaDeRespuestas stack)) "\n"
-        )))
-;Usuarios2 string
-(define usuarios2String
-  (lambda (lista)
-    (define recorrerUsuarios
-      (lambda (lista string i)
-        (cond
-          [(null? lista) string]
-          [else (recorrerUsuarios (cdr lista) (string-append string (~v i)".-" (selectorDato (car lista) 0) "Reputación : " (~v (selectorDato (car lista) 2))"\n")(+ 1 i))])))   
-  (if (null? lista)
-  "No hay usuarios registrados \n"
-  (recorrerUsuarios lista "Usuarios Registrados : \n" 1 ))))
-
-;Etiquetas
-(define etiquetas2String
-  (lambda (lista string)
-    (cond
-          [(null? lista) string]
-          [else (etiquetas2String (cdr lista) (string-append string (car lista) ", " ))])))
-
-;Preguntas2 string
-(define preguntas2String
-  (lambda (lista listaR)
-    (define recorrerPreguntas
-      (lambda (lista string i)
-        (cond
-          [(null? lista) string]
-          [else (recorrerPreguntas (cdr lista)
-          (string-append string (~v i)".-" "ID : " (~v (selectorDato (car lista) 0)) " Pregunta : " (selectorDato (car lista) 1) " Autor : " (selectorDato (car lista) 2)  (etiquetas2String (selectorDato (car lista) 3) " Etiquetas : ") " Fecha :" (selectorDato (car lista) 4) " Reward : "(~v (selectorDato (car lista) 5))"\n"
-                          (respuestas2String listaR (selectorDato (car lista) 0) ))(+ 1 i))])))   
-  (if (null? lista)
-  "No hay preguntas realizadas \n"
-  (recorrerPreguntas lista "Preguntas realizadas : \n" 1 ))))
-
-
-
-;Entrada : lista de respuestas idPregunta
-; EJEMPLO : (respuestas2String (GetListaDeRespuestas stackoverflow) 1)
-(define respuestas2String
-  (lambda(lista idPregunta )
-    (define recorrerRespuestas
-      (lambda (lista string i)
-        (cond
-          [( null? lista) string]
-          [else (recorrerRespuestas (cdr lista) (string-append string (~v i)  ".- ID : "(~v (selectorDato (car lista)0)) " Autor :" (selectorDato (car lista)1) " Respuesta :" (selectorDato (car lista)3) " Fecha : " (selectorDato (car lista)2) (etiquetas2String (selectorDato (car lista) 4) " Etiquetas : ") ) (+ i 1)) ])
-
         ))
-    (cond
-      ;Hasta que llege a ser nulo
-      [(null? lista) "alo"]
-      ;Si no es nulo sigo buscando el ultimo elemento (null) de la lista
-      [(equal? (car(car lista)) idPregunta)  (recorrerRespuestas (cdr (car lista)) (string-append "Respuestas de la pregunta de ID : " (~v (car(car lista))) "\n") 1)  ]
-      [else(respuestas2String (cdr lista) idPregunta)])))
+)
