@@ -16,7 +16,7 @@
 ;Funcion: ve si el nombre de usuario se encuentra en la lista de usuarios.
 ;Dominio: lista de usuarios x string usuario.
 ;Recorrido: bolean.
-;Tipo recursion:
+;Tipo recursion: de cola.
 ;Ejemplo: (buscadorNameUser(GetListaDeUsuarios stack)"user")
 (define buscadorNameUser(lambda(lista user)
                            (cond
@@ -57,6 +57,7 @@
 ;Funcion:Selector para no usar car y cdr.
 ;Dominio:Lista x Indice
 ;Recorrido: Elemento dentro de lista
+;Tipo de recursion: cola.
 (define selectorDato(lambda (elemento indice)
     (define select(lambda (elemento indice)
       (if (zero? indice)

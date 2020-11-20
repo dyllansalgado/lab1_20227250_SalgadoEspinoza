@@ -94,7 +94,7 @@
 ;Funcion: Obtener el usuario de una respuesta
 ;Entrada: lista de respuestas en el stack x id de la pregunta x id de respuesta.
 ;Recorrido: Usuario que realiza pregunta, si no se encuentra entrega #f
-;Tipo de recursion: natural.
+;Tipo de recursion: Cola.
 ;Ejemplo: (getUsuarioAnswer (GetListaDeRespuestas stackoverflow) 1 1)
 (define getUsuarioAnswer
 (lambda(lista idPregunta idRespuesta)
@@ -106,7 +106,7 @@
         ;Si no es nulo sigo buscando el ultimo elemento (null) de la lista
         [(equal? (car(car lista)) idRespuesta) (selectorDato (car lista) 1) ]
         [else(buscarUsuario (cdr lista) idRespuesta)])))
-  (cond
+    (cond
     ;Hasta que llege a ser nulo
     [( null? lista) #f]
     ;Si no es nulo sigo buscando el ultimo elemento (null) de la lista
@@ -116,7 +116,7 @@
 ;Funcion: Obtiene el indice del usuario entregado.
 ;Entrada: Se le entrega el nombre del usuario.
 ;Salida: Indice de la lista que corresponde dicho nombre de usuario.
-;Tipo de recursion: 
+;Tipo de recursion: Cola.
 ;Ejemplo:(getIndiceUsuario stackoverflow "usuario")
 (define getIndiceUsuario
   (lambda (stack usuario)
@@ -133,6 +133,7 @@
 ;Funcion: obtener indice de pregunta en una lista de respuestas.
 ;Entrada: lista de respuestas en stack x id repuesta.
 ;Salida: devuelve el indice de la respuesta y si no la encuentra devuelve un -1.
+;Tipo recursion: Cola.
 ;EJEMPLO : (getIndicePreguntaID (GetListaDeRespuestas stackoverflow) 1)
 (define getIndicePreguntaID (lambda(lista id)
                 (define buscar (lambda(lista id i)
@@ -146,12 +147,12 @@
                (buscar lista id 0)))
 
 
-
 ;MODIFICADORES:
 
 ;Funcion: asigna el valor del reward a la pregunta.
 ;Entrada: lista de preguntas del stack x id x reward x stack x indice.
 ;Salida: pregunta con reward asignado.
+;Tipo recursion: cola.
 ;Ejemplo:(asignarRewardPreguntaID (GetListaDePreguntas stackoverflow) id reward stackoverflow indicepregunta)
 (define asignarRewardPreguntaID(lambda (lista id reward stack i)
                             (cond
@@ -215,7 +216,7 @@
 ;Funcion : permite al registro realizado poder ingresar.
 ;Dominio: stack x string x string x funcion
 ;Salida: stack con funcion realizada
-;Tipo de recursion: Se utiliza recursion natural en funcion buscadorNameUser.
+;Tipo de recursion: Se utiliza recursion cola en funcion buscadorNameUser.
 ;Ejemplo : (login stackoverflow "user" "pass" ask)
 (define login (lambda (stack username password operation)
                 (if (and (esStackoverflow? stack) (string? username) (string? password))
@@ -234,6 +235,9 @@
                              ;acept
                              [(equal? operation accept)
                               (accept (logear stack username password))]
+                             ;stack->string
+                             [(equal? operation stack->string)
+                              (stack->string (logear stack username password))]
                              [else
                               (display "Comando Invalido\n")])
                            operation
@@ -320,11 +324,13 @@
        (string-append
         (usuarios2String (GetListaDeUsuarios stack)) "\n"
         (preguntas2String (GetListaDePreguntas stack) (GetListaDeRespuestas stack)) "\n"
+        "sesion activa: \n" "nombre de usuario: "  (car (GetActiveUsuario stack)) " contraseña: "(cadr(GetActiveUsuario stack))
         )))
 
 ;Funcion: Nos permite convertir en string una lista que entregemos.
 ;Dominio: lista
 ;Recorrido:string de la lista
+;Tipo Recursion:cola.
 ;Ejemplo:(usuarios2String (GetListaDeUsuarios stack))
 (define usuarios2String
   (lambda (lista)
@@ -340,6 +346,7 @@
 ;Funcion:Funcion para convertir las etiquetas en string.
 ;Dominio: lista x lista etiquetas
 ;Recorrido: lista string de etiquetas
+;Tipo Recursion: cola.
 (define etiquetas2String
   (lambda (lista string)
     (cond
@@ -365,6 +372,7 @@
 ;Funcion: nos permite pasar a string la lista de respuestas 
 ;Dominio : lista de respuestas idPregunta
 ;Recorrido: lista de string
+;Tipo de recursion: Cola.
 ;Ejemplo: (respuestas2String (GetListaDeRespuestas stackoverflow) 1)
 (define respuestas2String
   (lambda(lista idPregunta )
@@ -440,15 +448,14 @@
 ;Si otro usuario quiere aceptar la respuesta de la pregunta que el no ha generado,
 ;Se entrega un error
 ;2:(define stack13(((login (((login stack10 "user02" "pass02" reward) 1) 0) "user2" "pass02" accept) 1) 1))
-
-;3:
+;3:(define stack13(((login (((login stack10 "user02" "pass02" reward) 1) 10) "user2" "pass02" accept) 1) 1))
 
 ;FUNCION STACK -> STRING:
 ;El stack se transforma en string.
 ;1:(display(stack->string stack12))
 ;Mostramos lista de usuarios con su reputacion.
 ;2:(display(stack->string stack1))
-;3:
+;3:(display(login stack12 "user01" "pass01" stack->string))
 
 ;Ahora todo un codigo generado:
 ;(define so (stackoverflow (list) (list) (list) (list)))
@@ -462,3 +469,4 @@
 ;(define so7(((login (((login so6 "user01" "pass01" reward) 1) 300) "user01" "pass01" accept) 1) 1))
 ;(define so8(((login (((login so7 "user02" "pass02" reward) 2) 0) "user02" "pass02" accept) 2) 1))
 ;(display(stack->string so8))
+;(display(login so8 "user01" "pass01" stack->string))
