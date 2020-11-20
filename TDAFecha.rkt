@@ -1,21 +1,5 @@
 #lang racket
 ;Implementación del TDA fecha
-
-;representacion
-;(entero X entero X entero)
-;(list dia mes año) 
-
-(define fecha2String
-  (lambda (lista)
-    (define (convertirLista lista string i)
-      (if (null? lista)
-      string
-      (if (= i 2)
-          (convertirLista (cdr lista)  (string-append string (~v (car lista))) (+ i 1))
-          (convertirLista (cdr lista)  (string-append string (~v (car lista)) "/") (+ i 1))
-          )
-      ))
-    (convertirLista lista "" 0)))
 ;CONSTRUCTOR
 ;descripción: Permite crear una fecha
 ;dom: entero X entero X entero
@@ -28,7 +12,6 @@
       null
   )
 )
-
 ;PERTENENCIA
 ;descripción: Función que permite determinar si un elemento cualquiera es del tipo fecha
 ;             se implementa a partir del constructor
@@ -123,6 +106,20 @@
       null
   )
  )
+;representacion
+;(entero X entero X entero)
+;(list dia mes año) 
+(define fecha2String
+  (lambda (lista)
+    (define (convertirLista lista string i)
+      (if (null? lista)
+      string
+      (if (= i 2)
+          (convertirLista (cdr lista)  (string-append string (~v (car lista))) (+ i 1))
+          (convertirLista (cdr lista)  (string-append string (~v (car lista)) "/") (+ i 1))
+          )
+      ))
+    (convertirLista lista "" 0)))
 
 ;LAS SIGUIENTES TRES FUNCIONES SON COMPLEMENTARIAS/AUXILIARES AL TDA. NO FORMAN PARTE DEL TDA FECHA, PERO
 ;EL TDA FECHA LAS EMPLEA PARA PODER REALIZAR SU TRABAJO. ESTAS FUNCIONES DE IGUAL FORMA PUEDEN
@@ -179,6 +176,4 @@
             ((= m 12) "Diciembre")
        )
   )
-
-
 (provide fecha)
